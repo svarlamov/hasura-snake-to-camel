@@ -2,7 +2,7 @@ A Python script to convert Hasura APIs from 🐍snake_case to 🐪camelCase usin
 
 ## Quick Start
 You can run the script as a copy using Google Colab here:
-https://colab.research.google.com/drive/1LYajKSAqg6FEruDfWSVN4RB1JfpWdH9A?usp=sharing
+https://colab.research.google.com/drive/1LYajKSAqg6FEruDfWSVN4RB1JfpWdH9A
 
 Please read and test with your setup first before running on your project.
 
@@ -34,13 +34,18 @@ active_user_delete_by_pk : activeUserDelete
 ```
 
 ## API Versions
-This version is built for the 2.0+ `pg_set_table_customization` API which supports multiple data sources (which this script isn't currently handling - it would probably need something like the below message where we'd get table names via runSQL) [https://hasura.io/docs/latest/graphql/core/api-reference/metadata-api/table-view.html#pg-set-table-customization]
+This version is built for the 2.0+ `pg_set_table_customization` API which supports multiple data sources (which this script isn't currently handling, it relies on the `default` database - it would probably need something like the note below where we'd get table names via runSQL) [https://hasura.io/docs/latest/graphql/core/api-reference/metadata-api/table-view.html#pg-set-table-customization]
 
 To back port it to 1.3.4, pretty much all the logic would be the same minus some minor tweaks to the JSON payload which is being sent using `set_table_customization` instead [https://hasura.io/docs/latest/graphql/core/api-reference/schema-metadata-api/table-view.html#set-table-customization].
+
+For versions around 1.3.3 where this feature was introduced you can also back port to the older `set_table_custom_fields` which should be a similarily small tweak to the payload being sent [https://hasura.io/docs/latest/graphql/core/api-reference/schema-metadata-api/table-view.html#set-table-custom-fields-deprecated]
 
 ## Feedback?
 This was created pretty quickly so feel free to let me know if there are any improvements you see.
 
+-----
+
+### Note on Edge Cases
 The one edge case that I can imagine is if someone has already aliased their root field with a new name which also has `_aggregate` in it. This would fail for that field since the `/v1/metdata` API is expecting a table name with the reference (and the alias would be different from the table name).
 
 A fix for this would be to use the runSQL API (https://hasura.io/docs/latest/graphql/core/api-reference/schema-metadata-api/run-sql.html) to check that all fields matched database tables / views beforehand -- it seemed like a very infrequent edge-case at the time, I may update that as a later update.
