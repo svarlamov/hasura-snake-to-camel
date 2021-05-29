@@ -37,15 +37,18 @@ query introspectionQueryRoot {
 '''
 query_root = requests.post(hasura_hostname+'/v1/graphql', json={'query': query}, headers={'x-hasura-admin-secret': admin_secret})
 json_data = json.loads(query_root.text)
-fields = pd.DataFrame(json_data['data']['__type']['fields'])
 
-print('>>> All Fields')
-display(fields)
+if query_root.ok:
+  fields = pd.DataFrame(json_data['data']['__type']['fields'])
+else:
+  print(query_root.reason)
+  raise Exception("We had trouble contacting your API -- please check your hostname.") 
+
 ## Stripping from the _aggregate field to try and target just new tables and views
 fields = fields[fields['name'].str.endswith('_aggregate')]
 fields['name'] = fields['name'].str.replace('_aggregate', '')
 
-print('>>> Table and View-Based Fields')
+print('>>> Fields to update:')
 display(fields)
 
 # Inflect word to plural / singular
@@ -99,12 +102,12 @@ for i in fields.index:
   custom_root_fields['delete'] = plural_camel + 'Delete'
   custom_root_fields['delete_by_pk'] = singular_camel + 'Delete'
 
-  configuration['custom_root_fields'] = custom_root_fields
-  args['configuration'] = configuration
   jsondata['args'] = args
+  args['configuration'] = configuration
+  configuration['custom_root_fields'] = custom_root_fields
 
   update_root_fields = requests.post(hasura_hostname+'/v1/metadata', json=jsondata, headers={'x-hasura-admin-secret': admin_secret})
-  if update_root_fields.status_code == 200:
+  if update_root_fields.ok:
       print('-----------------------------------------')
       print('Success: ' + fields.at[i,'name'])
   else:
