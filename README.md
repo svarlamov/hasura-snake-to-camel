@@ -17,6 +17,22 @@ Please read and test with your setup first before running on your project.
     - If you look for the `custom_root_fields` JSON build steps you can modify those to customize your naming convention
 7. Send to the `/v1/metadata` API
 
+## Example Output
+```
+Example for => Table Name : active_user
+---------------------------------
+Before                   : After
+active_user              : activeUsers
+active_user_by_pk        : activeUser
+active_user_aggregagte   : activeUsersAggregate
+active_user_insert       : activeUsersInsert
+active_user_insert_one   : activeUserInsert
+active_user_update       : activeUsersUpdate
+active_user_update_by_pk : activeUserUpdate
+active_user_delete       : activeUsersDelete
+active_user_delete_by_pk : activeUserDelete
+```
+
 ## API Versions
 This version is built for the 2.0+ `pg_set_table_customization` API which supports multiple data sources (which this script isn't currently handling - it would probably need something like the below message where we'd get table names via runSQL) [https://hasura.io/docs/latest/graphql/core/api-reference/metadata-api/table-view.html#pg-set-table-customization]
 
