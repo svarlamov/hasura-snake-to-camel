@@ -25,8 +25,6 @@ To back port it to 1.3.4, pretty much all the logic would be the same minus some
 ## Feedback?
 This was created pretty quickly so feel free to let me know if there are any improvements you see.
 
-```
 The one edge case that I can imagine is if someone has already aliased their root field with a new name which also has `_aggregate` in it. This would fail for that field since the `/v1/metdata` API is expecting a table name with the reference (and the alias would be different from the table name).
 
 A fix for this would be to use the runSQL API (https://hasura.io/docs/latest/graphql/core/api-reference/schema-metadata-api/run-sql.html) to check that all fields matched database tables / views beforehand -- it seemed like a very infrequent edge-case at the time, I may update that as a later update.
-```
